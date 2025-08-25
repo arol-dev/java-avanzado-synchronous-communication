@@ -1,0 +1,37 @@
+services:
+  eureka-server:
+    build:
+      context: .
+      dockerfile: eureka-server/Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  service-provider:
+    build:
+      context: .
+      dockerfile: service-provider/Dockerfile
+    container_name: service-provider
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+    ports:
+      - "8081:8081"
+
+  service-consumer:
+    build:
+      context: .
+      dockerfile: service-consumer/Dockerfile
+    container_name: service-consumer
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+    depends_on:
+      - eureka-server
+      - service-provider
+    ports:
+      - "8080:8080"
+
+# Usage:
+# docker compose build
+# docker compose up
