@@ -1,9 +1,35 @@
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector:0.104.0
+    container_name: otel-collector
+    healthcheck:
+      test: [ "CMD", "otelcol", "--version" ]
+    command: [ "--config=/etc/otelcol-config.yaml" ]
+    volumes:
+      - ./otelcol.yaml:/etc/otelcol-config.yaml:ro
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    container_name: jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+
   eureka-server:
     build:
       context: .
       dockerfile: eureka-server/Dockerfile
     container_name: eureka-server
+    environment:
+      - MANAGEMENT_OTLP_TRACING_ENDPOINT=http://otel-collector:4317
+      - MANAGEMENT_OTLP_TRACING_PROTOCOL=grpc
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
     ports:
       - "8761:8761"
 
@@ -14,8 +40,15 @@ services:
     container_name: service-provider
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - MANAGEMENT_OTLP_TRACING_ENDPOINT=http://otel-collector:4317
+      - MANAGEMENT_OTLP_TRACING_PROTOCOL=grpc
     depends_on:
-      - eureka-server
+      eureka-server:
+        condition: service_started
+      otel-collector:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
     ports:
       - "8081:8081"
 
@@ -26,9 +59,17 @@ services:
     container_name: service-consumer
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - MANAGEMENT_OTLP_TRACING_ENDPOINT=http://otel-collector:4317
+      - MANAGEMENT_OTLP_TRACING_PROTOCOL=grpc
     depends_on:
-      - eureka-server
-      - service-provider
+      eureka-server:
+        condition: service_started
+      otel-collector:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+      service-provider:
+        condition: service_started
     ports:
       - "8080:8080"
 
