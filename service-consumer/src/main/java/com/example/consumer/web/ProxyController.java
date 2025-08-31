@@ -1,6 +1,7 @@
 package com.example.consumer.web;
 
 import com.example.consumer.client.ProviderClient;
+import com.example.consumer.db.ItemRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -38,5 +40,11 @@ public class ProxyController {
     // Fallback must return the same type and accept Throwable as last arg
     private CompletableFuture<String> unreliableFallback(Throwable t) {
         return CompletableFuture.completedFuture("fallback: provider unavailable - " + t.getClass().getSimpleName());
+    }
+
+    // Local DB endpoint to exercise JDBC spans in the consumer
+    @GetMapping("/db/items")
+    public List<String> items(ItemRepository repo) {
+        return repo.findAll();
     }
 }
