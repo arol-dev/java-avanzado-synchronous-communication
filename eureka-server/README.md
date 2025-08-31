@@ -1,7 +1,9 @@
 # Eureka Server
 
 Este módulo contiene el servidor de descubrimiento (Eureka) para registrar y
-descubrir microservicios.
+descubrir microservicios. También incluye Micrometer Tracing + OpenTelemetry
+configurado para exportar trazas (por ejemplo, del servidor embebido y
+peticiones al panel).
 
 ## Requisitos
 
@@ -16,6 +18,14 @@ descubrir microservicios.
     - `mvn -q -pl eureka-server -am spring-boot:run`
 3. Abre el panel web de Eureka en:
     - http://localhost:8761
+
+## Observabilidad
+
+- Muestreo de trazas al 100% (dev):
+  `management.tracing.sampling.probability=1.0`.
+- Exportación OTLP a Collector local:
+  `management.otlp.tracing.endpoint=http://localhost:4317`.
+- Logs con traceId/spanId.
 
 ## Configuración
 
