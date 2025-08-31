@@ -23,4 +23,4 @@ jobs:
 
       # This action parses the Maven build and submits dependencies to GitHub's dependency graph
       - name: Submit dependency graph
-        uses: advanced-security/maven-dependency-submission-action@v4
+        uses: advanced-security/maven-dependency-submission-action@v5
