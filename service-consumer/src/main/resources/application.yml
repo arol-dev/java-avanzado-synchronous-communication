@@ -30,6 +30,8 @@ management:
   tracing:
     sampling:
       probability: 1.0
+    propagation:
+      type: w3c
   otlp:
     tracing:
       endpoint: http://localhost:4317
