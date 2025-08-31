@@ -2,8 +2,6 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector:0.104.0
     container_name: otel-collector
-    healthcheck:
-      test: [ "CMD", "otelcol", "--version" ]
     command: [ "--config=/etc/otelcol-config.yaml" ]
     volumes:
       - ./otelcol.yaml:/etc/otelcol-config.yaml:ro
@@ -27,7 +25,7 @@ services:
       - MANAGEMENT_OTLP_TRACING_PROTOCOL=grpc
     depends_on:
       otel-collector:
-        condition: service_healthy
+        condition: service_started
       jaeger:
         condition: service_started
     ports:
@@ -46,7 +44,7 @@ services:
       eureka-server:
         condition: service_started
       otel-collector:
-        condition: service_healthy
+        condition: service_started
       jaeger:
         condition: service_started
     ports:
@@ -65,7 +63,7 @@ services:
       eureka-server:
         condition: service_started
       otel-collector:
-        condition: service_healthy
+        condition: service_started
       jaeger:
         condition: service_started
       service-provider:
