@@ -9,7 +9,7 @@ usando:
 
 Cada módulo tiene su propio README con pasos de ejecución y detalles.
 
-## Versiones (agosto 2025)
+## Versiones
 
 - Java 21
 - Spring Boot 3.5.0

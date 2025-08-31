@@ -1,0 +1,4 @@
+.idea/
+eureka-server/target
+service-consumer/target
+service-provider/target
