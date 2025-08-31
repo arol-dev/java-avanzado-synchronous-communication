@@ -8,4 +8,7 @@ public interface ProviderClient {
 
     @GetMapping("/api/hello")
     String hello();
+
+    @GetMapping("/api/unreliable")
+    String unreliable();
 }

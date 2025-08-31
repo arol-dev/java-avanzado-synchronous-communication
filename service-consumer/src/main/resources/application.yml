@@ -18,3 +18,24 @@ management:
     web:
       exposure:
         include: "*"
+
+# Resilience4j configuration for circuit breaker, time limiter, and retry
+resilience4j:
+  circuitbreaker:
+    instances:
+      providerUnreliable:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+  timelimiter:
+    instances:
+      providerUnreliable:
+        timeoutDuration: 500ms
+        cancelRunningFuture: true
+  retry:
+    instances:
+      providerUnreliable:
+        maxAttempts: 3
+        waitDuration: 100ms
