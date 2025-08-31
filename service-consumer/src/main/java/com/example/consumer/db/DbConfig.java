@@ -10,8 +10,8 @@ public class DbConfig {
     CommandLineRunner init(ItemRepository repo) {
         return args -> {
             repo.initSchema();
-            repo.insert("one");
-            repo.insert("two");
+            repo.insert("GAMMA");
+            repo.insert("DELTA");
         };
     }
 }
