@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"  # Root pom.xml manages all modules
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    assignees:
+      - "anyulled"
+    reviewers:
+      - "anyulled"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    open-pull-requests-limit: 5

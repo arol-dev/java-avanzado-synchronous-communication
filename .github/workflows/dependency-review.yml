@@ -1,0 +1,26 @@
+name: Dependency Review
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  dependency-review:
+    name: Scan dependencies for vulnerabilities
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Dependency Review scans changes to dependency manifests in the PR and flags known vulnerabilities
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Set to true to fail the workflow when vulnerabilities are detected
+          fail-on-severity: high
+          # Allow licenses check if needed
+          # allow-licenses: "Apache-2.0,MIT,BSD-2-Clause,BSD-3-Clause"

@@ -1,0 +1,26 @@
+name: Maven Dependency Submission
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  submit-dependency-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # This action parses the Maven build and submits dependencies to GitHub's dependency graph
+      - name: Submit dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v4
