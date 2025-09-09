@@ -71,7 +71,7 @@ Puedes usar Docker para ver las trazas en Jaeger:
 
 Docker Compose (ejemplo mínimo):
 
-```
+```yaml
 version: "3"
 services:
   otel-collector:
@@ -90,7 +90,7 @@ services:
 
 Archivo `otelcol.yaml`:
 
-```
+```yaml
 receivers:
   otlp:
     protocols:
