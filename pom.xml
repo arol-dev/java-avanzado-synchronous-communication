@@ -21,6 +21,7 @@
   </properties>
 
   <modules>
+    <module>api-gateway</module>
     <module>eureka-server</module>
     <module>service-provider</module>
     <module>service-consumer</module>
