@@ -11,6 +11,26 @@ usando:
 
 Cada módulo tiene su propio README con pasos de ejecución y detalles.
 
+## API Gateway (Spring Cloud Gateway)
+
+El módulo `api-gateway` actúa como puerta de entrada (edge service) para exponer
+los microservicios detrás de endpoints unificados y con balanceo de carga.
+Está integrado con Eureka para descubrimiento dinámico de servicios.
+
+- Puerto: `8082`
+- Descubrimiento: habilitado con `spring.cloud.gateway.discovery.locator.enabled=true`.
+- Rutas definidas (application.yml):
+  - `/provider/**` → `lb://service-provider` (se reescribe a `/` del servicio destino)
+  - `/consumer/**` → `lb://service-consumer` (se reescribe a `/` del servicio destino)
+
+Ejemplos:
+- `curl http://localhost:8082/provider/api/hello`
+- `curl http://localhost:8082/consumer/api/proxy`
+
+Observabilidad:
+- Hereda la configuración de Micrometer Tracing/OTLP. En Docker Compose exporta
+  a `otel-collector` y puedes ver las trazas del `api-gateway` en Jaeger.
+
 ## Versiones
 
 - Java 21
@@ -26,6 +46,9 @@ Cada módulo tiene su propio README con pasos de ejecución y detalles.
   Feign. Incluye H2 + JDBC con endpoint `/api/db/items` local. También añade un
   ejemplo de resiliencia con CircuitBreaker/Retry/TimeLimiter en
   `/api/proxy-unreliable`.
+- `api-gateway` (Spring Cloud Gateway): puerta de entrada en `:8082` que enruta
+  tráfico a servicios registrados en Eureka. Permite acceder a los servicios con
+  paths amigables y balanceo de carga vía `lb://`.
 
 ## Observabilidad y Trazas
 
@@ -109,7 +132,7 @@ Para más detalles y opciones de configuración, revisa los README de cada módu
 
 Se incluye un archivo `docker-compose.yml` que levanta:
 
-- Eureka, Provider y Consumer
+- Eureka, Provider, Consumer y API Gateway
 - Un OpenTelemetry Collector (OTLP gRPC/HTTP)
 - Jaeger (UI para ver trazas)
 
@@ -124,8 +147,12 @@ Comandos:
     - Panel de Eureka http://localhost:8761
     - `curl http://localhost:8081/api/hello`
     - `curl http://localhost:8080/api/proxy`
+    - Gateway en http://localhost:8082
+    - A través del Gateway:
+        - `curl http://localhost:8082/provider/api/hello`
+        - `curl http://localhost:8082/consumer/api/proxy`
     - Abre Jaeger UI: http://localhost:16686 (busca servicios: service-provider,
-      service-consumer, eureka-server)
+      service-consumer, eureka-server, api-gateway)
 
 Notas:
 
@@ -136,5 +163,5 @@ Notas:
   `MANAGEMENT_OTLP_TRACING_ENDPOINT=http://otel-collector:4317` para exportar
   trazas al Collector del Compose.
 - `depends_on` asegura el orden de arranque (Collector/Jaeger → Eureka →
-  Provider → Consumer). Aun así, los clientes reintentan el registro hasta que
-  Eureka esté disponible.
+  Provider → Consumer → API Gateway). Aun así, los clientes reintentan el
+  registro hasta que Eureka esté disponible.
