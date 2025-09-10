@@ -1,5 +1,3 @@
-
-
 spring:
   application:
     name: api-gateway
@@ -9,19 +7,31 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
-      routes:
-        - id: service-provider
-          uri: lb://service-provider
-          predicates:
-            - Path=/provider/**
-          filters:
-            - RewritePath=/provider/(?<segment>.*), /$\{segment}
-        - id: service-consumer
-          uri: lb://service-consumer
-          predicates:
-            - Path=/consumer/**
-          filters:
-            - RewritePath=/consumer/(?<segment>.*), /$\{segment}
+      server:
+        webmvc:
+          routes:
+            # Specific route for unreliable endpoint with circuit breaker and fallback
+            - id: service-provider-unreliable
+              uri: lb://service-provider
+              predicates:
+                - Path=/provider/api/unreliable
+              filters:
+                - StripPrefix=1
+                - CircuitBreaker=name=providerUnreliableCb,fallbackUri=forward:/fallback/provider-unreliable
+            # Generic route for provider
+            - id: service-provider
+              uri: lb://service-provider
+              predicates:
+                - Path=/provider/**
+              filters:
+                - StripPrefix=1
+            # Generic route for consumer
+            - id: service-consumer
+              uri: lb://service-consumer
+              predicates:
+                - Path=/consumer/**
+              filters:
+                - StripPrefix=1
 
 eureka:
   client:
@@ -47,3 +57,7 @@ management:
 
 server:
   port: 8082
+
+logging:
+  level:
+    org.springframework.cloud.gateway.server.mvc: DEBUG

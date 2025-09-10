@@ -21,14 +21,16 @@ Configuración principal (ver `src/main/resources/application.yml`):
 - Descubrimiento dinámico: `spring.cloud.gateway.discovery.locator.enabled=true`
   (con `lower-case-service-id=true`)
 - Rutas estáticas definidas:
-  - `Path=/provider/**` → `lb://service-provider` con
-    `RewritePath=/provider/(?<segment>.*), /${segment}`
-  - `Path=/consumer/**` → `lb://service-consumer` con
-    `RewritePath=/consumer/(?<segment>.*), /${segment}`
+  - `Path=/provider/api/unreliable` → `lb://service-provider` con filtros:
+    `StripPrefix=1` y `CircuitBreaker` (fallback a `forward:/fallback/provider-unreliable`).
+  - `Path=/provider/**` → `lb://service-provider` con `StripPrefix=1`.
+  - `Path=/consumer/**` → `lb://service-consumer` con `StripPrefix=1`.
 
 Esto permite acceder a los servicios detrás del gateway con prefijos amigables y
-balanceo de carga (scheme `lb://`). El filtro `RewritePath` elimina el prefijo
-(`/provider` o `/consumer`) antes de reenviar la solicitud al servicio destino.
+balanceo de carga (scheme `lb://`). El filtro `StripPrefix=1` elimina el primer
+segmento (`/provider` o `/consumer`) antes de reenviar la solicitud al servicio
+backend. Para `/provider/api/unreliable`, además se aplica un CircuitBreaker con
+un endpoint de fallback.
 
 ## Cómo ejecutar
 
@@ -40,6 +42,7 @@ balanceo de carga (scheme `lb://`). El filtro `RewritePath` elimina el prefijo
 4. Probar:
    - `curl http://localhost:8082/provider/api/hello`
    - `curl http://localhost:8082/consumer/api/proxy`
+   - `curl -i http://localhost:8082/provider/api/unreliable`  # CircuitBreaker activo; puede devolver fallback
 
 ## Ejecutar con Docker Compose (opcional)
 
@@ -53,6 +56,7 @@ Desde la raíz del repositorio:
   - A través del Gateway:
     - `curl http://localhost:8082/provider/api/hello`
     - `curl http://localhost:8082/consumer/api/proxy`
+    - `curl -i http://localhost:8082/provider/api/unreliable`  # aplica CircuitBreaker + fallback
 
 ## Observabilidad
 

@@ -20,12 +20,14 @@ Está integrado con Eureka para descubrimiento dinámico de servicios.
 - Puerto: `8082`
 - Descubrimiento: habilitado con `spring.cloud.gateway.discovery.locator.enabled=true`.
 - Rutas definidas (application.yml):
-  - `/provider/**` → `lb://service-provider` (se reescribe a `/` del servicio destino)
-  - `/consumer/**` → `lb://service-consumer` (se reescribe a `/` del servicio destino)
+  - `/provider/api/unreliable` → `lb://service-provider` con filtros `StripPrefix=1` y `CircuitBreaker` (fallback a `forward:/fallback/provider-unreliable`).
+  - `/provider/**` → `lb://service-provider` con `StripPrefix=1`.
+  - `/consumer/**` → `lb://service-consumer` con `StripPrefix=1`.
 
 Ejemplos:
 - `curl http://localhost:8082/provider/api/hello`
 - `curl http://localhost:8082/consumer/api/proxy`
+- `curl -i http://localhost:8082/provider/api/unreliable`  # CircuitBreaker activo; puede devolver fallback
 
 Observabilidad:
 - Hereda la configuración de Micrometer Tracing/OTLP. En Docker Compose exporta
@@ -151,6 +153,7 @@ Comandos:
     - A través del Gateway:
         - `curl http://localhost:8082/provider/api/hello`
         - `curl http://localhost:8082/consumer/api/proxy`
+        - `curl -i http://localhost:8082/provider/api/unreliable`  # aplica CircuitBreaker + fallback
     - Abre Jaeger UI: http://localhost:16686 (busca servicios: service-provider,
       service-consumer, eureka-server, api-gateway)
 
