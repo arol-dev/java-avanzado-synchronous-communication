@@ -3,35 +3,31 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
       server:
-        webmvc:
+        webflux:
           routes:
             # Specific route for unreliable endpoint with circuit breaker and fallback
             - id: service-provider-unreliable
-              uri: lb://service-provider
+              uri: lb://SERVICE-PROVIDER
               predicates:
-                - Path=/provider/api/unreliable
+                - Path=/service-provider/api/unreliable
               filters:
                 - StripPrefix=1
                 - CircuitBreaker=name=providerUnreliableCb,fallbackUri=forward:/fallback/provider-unreliable
             # Generic route for provider
             - id: service-provider
-              uri: lb://service-provider
+              uri: lb://SERVICE-PROVIDER
               predicates:
-                - Path=/provider/**
-              filters:
-                - StripPrefix=1
+                - Path=/service-provider/**
             # Generic route for consumer
             - id: service-consumer
-              uri: lb://service-consumer
+              uri: lb://SERVICE-CONSUMER
               predicates:
-                - Path=/consumer/**
-              filters:
-                - StripPrefix=1
+                - Path=/service-consumer/**
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
 
 eureka:
   client:
@@ -61,3 +57,8 @@ server:
 logging:
   level:
     org.springframework.cloud.gateway.server.mvc: DEBUG
+    org.springframework.web.servlet: DEBUG
+    org.springframework.cloud.gateway: TRACE
+    org.springframework.cloud.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
+    com.netflix.eureka: DEBUG
