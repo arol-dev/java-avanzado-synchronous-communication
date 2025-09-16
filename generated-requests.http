@@ -1,0 +1,185 @@
+### V1
+GET http://localhost:8080/api/v1/users/1
+
+<> 2025-08-25T202157.200.json
+<> 2025-08-25T194317.200.json
+<> 2025-08-25T185624.200.json
+<> 2025-08-25T120435.200.json
+
+### V1
+POST http://localhost:8080/api/v1/users
+Content-Type: application/json
+
+{
+  "email": "anyulled@gmail.com"
+}
+
+<> 2025-08-25T202311.201.json
+<> 2025-08-25T185618.201.json
+<> 2025-08-25T120428.201.json
+
+### V2
+GET http://localhost:8080/api/v2/users/1
+
+<> 2025-08-25T202209.200.json
+<> 2025-08-25T194325.200.json
+<> 2025-08-25T185628.200.json
+<> 2025-08-25T132312.200.json
+<> 2025-08-25T132259.200.json
+<> 2025-08-25T120520.200.json
+
+### V2
+POST http://localhost:8080/api/v2/users
+Content-Type: application/json
+
+{
+  "email": "anyulled@gmail.com",
+  "name": "Anyul Rivas"
+}
+
+<> 2025-08-25T120549.201.json
+
+### V3
+GET http://localhost:8080/api/users/1
+Content-Type: application/json
+X-API-Version: 3
+
+{
+  "email": "anyulled@gmail.com",
+  "name": "Anyul Rivas"
+}
+
+<> 2025-08-25T202239.200.json
+<> 2025-08-25T194349.200.json
+<> 2025-08-25T185802.200.json
+<> 2025-08-25T185724.405.json
+<> 2025-08-25T185633.201.json
+<> 2025-08-25T123931.201.json
+<> 2025-08-25T123908.404.json
+
+### V3
+POST http://localhost:8080/api/users
+Content-Type: application/json
+X-API-Version: 3
+
+{
+  "email": "anyulled@gmail.com",
+  "name": "Anyul Rivas"
+}
+
+<> 2025-08-25T194427.201.json
+<> 2025-08-25T185633.201.json
+<> 2025-08-25T123931.201.json
+<> 2025-08-25T123908.404.json
+
+### V4
+GET http://localhost:8080/api/users/1
+X-API-Version: 4
+
+<> 2025-08-25T202252.200.json
+<> 2025-08-25T194401.200.json
+<> 2025-08-25T185837.200.json
+
+### V4
+POST http://localhost:8080/api/users
+Content-Type: application/json
+X-API-Version: 4
+
+{
+  "email": "anyulled@gmail.com",
+  "name": "Anyul Rivas"
+}
+
+<> 2025-08-25T202301.201.json
+<> 2025-08-25T194438.201.json
+<> 2025-08-25T124016.201.json
+
+###
+GET http://localhost:8080/api/proxy
+
+###
+GET http://localhost:8080/api/proxy-unreliable
+
+<> 2025-09-10T221725.200.txt
+<> 2025-09-10T221721.500.json
+
+###
+GET http://localhost:8081/api/unreliable
+
+<> 2025-09-10T221718.500.txt
+<> 2025-09-10T221715.500.txt
+<> 2025-09-10T221714.500.txt
+<> 2025-09-10T221713.500.txt
+<> 2025-09-10T221711.500.txt
+<> 2025-08-31T190426.200.txt
+<> 2025-08-31T190424.500.txt
+<> 2025-08-31T184159.500.txt
+
+###
+GET http://localhost:8080/actuator/metrics/resilience4j.circuitbreaker.calls
+Accept: application/json
+
+
+<> f-3.txt
+
+###
+GET http://localhost:8081/api/db/items
+
+<> 2025-09-10T221737.200.json
+<> 2025-08-31T211906.200.json
+<> 2025-08-31T204840.200.json
+<> 2025-08-31T202826.200.json
+<> 2025-08-31T201625.200.json
+<> 2025-08-31T201622.200.json
+<> 2025-08-31T195621.200.json
+<> 2025-08-31T190414.404.json
+
+###
+GET http://localhost:8080/api/db/items
+
+<> 2025-09-10T221733.200.json
+<> 2025-08-31T211911.200.json
+<> 2025-08-31T211856.200.json
+<> 2025-08-31T210710.200.json
+<> 2025-08-31T210645.200.json
+<> 2025-08-31T210628.200.json
+<> 2025-08-31T210454.500.json
+<> 2025-08-31T210445.500.json
+<> 2025-08-31T205627.200.json
+<> 2025-08-31T204844.200.json
+<> 2025-08-31T203823.200.json
+<> 2025-08-31T203457.200.json
+<> 2025-08-31T202831.200.json
+<> 2025-08-31T202823.200.json
+<> 2025-08-31T201626.200.json
+<> 2025-08-31T200627.500.json
+<> 2025-08-31T195741.500.json
+<> 2025-08-31T195738.500.json
+
+###
+
+GET http://localhost:8082/service-consumer/api/db/items
+
+###
+
+GET localhost:8082/service-provider/api/unreliable
+
+<> 2025-09-10T222004.500.txt
+<> 2025-09-10T222002.200.txt
+<> 2025-09-10T221806.200.json
+
+
+###
+
+GET localhost:8082/fallback/provider-unreliable
+
+<> 2025-09-10T222053.200.txt
+<> 2025-09-10T222050.200.txt
+<> 2025-09-10T222049.200.txt
+<> 2025-09-10T222047.200.txt
+<> 2025-09-10T222046.200.txt
+<> 2025-09-10T222045.200.txt
+<> 2025-09-10T222044.200.txt
+<> 2025-09-10T222043.200.txt
+<> 2025-09-10T222041.200.txt
+<> 2025-09-10T222037.200.txt
