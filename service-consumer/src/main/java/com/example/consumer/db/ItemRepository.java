@@ -1,9 +1,9 @@
 package com.example.consumer.db;
 
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public class ItemRepository {
@@ -18,10 +18,15 @@ public class ItemRepository {
     }
 
     public void insert(String name) {
-        jdbc.update("INSERT INTO items(name) VALUES (?)", name);
+        // TODO: Ejercicio 1 - Implementar insert usando JdbcTemplate
+        // Consejo: Usa jdbc.update("INSERT INTO items(name) VALUES (?)", name);
+        throw new UnsupportedOperationException("Ejercicio 1 no implementado");
     }
 
     public List<String> findAll() {
-        return jdbc.query("SELECT name FROM items", (rs, i) -> rs.getString(1));
+        // TODO: Ejercicio 1 - Implementar findAll usando JdbcTemplate
+        // Consejo: Usa jdbc.query("SELECT name FROM items", (rs, i) ->
+        // rs.getString(1));
+        throw new UnsupportedOperationException("Ejercicio 1 no implementado");
     }
 }

@@ -1,19 +1,20 @@
 package com.example.consumer.client;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import java.util.List;
 
-@FeignClient(name = "service-provider")
+// TODO: Ejercicio 2 - Añadir la anotación @FeignClient
+// @FeignClient(name = "service-provider")
 public interface ProviderClient {
 
-    @GetMapping("/api/hello")
+    // TODO: Ejercicio 2 - Añadir la anotación @GetMapping
+    // @GetMapping("/api/hello")
     String hello();
 
-    @GetMapping("/api/unreliable")
+    // TODO: Ejercicio 2 - Añadir la anotación @GetMapping
+    // @GetMapping("/api/unreliable")
     String unreliable();
 
-    @GetMapping("/api/db/items")
+    // TODO: Ejercicio 2 - Añadir la anotación @GetMapping
+    // @GetMapping("/api/db/items")
     List<String> items();
 }

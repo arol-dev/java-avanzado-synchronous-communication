@@ -1,170 +1,93 @@
-# Comunicación síncrona con Spring Boot, Eureka y OpenFeign
+# Laboratorio de Java Avanzado: Comunicación Síncrona y Resiliencia
 
-Este repositorio contiene un ejemplo mínimo de comunicación entre microservicios
-usando:
+Laboratorio de Comunicación Síncrona Avanzada en Java. Este proyecto es un taller práctico diseñado para enseñarte cómo implementar **Patrones de Resiliencia** (Circuit Breaker, Time Limiter, Retry) y una **Comunicación Síncrona** robusta utilizando Spring Boot, Spring Cloud y Resilience4j.
 
-- Eureka Server (descubrimiento de servicios)
-- 2 microservicios: `service-provider` y `service-consumer`
-- OpenFeign para llamadas HTTP entre servicios usando descubrimiento por nombre
-- Micrometer Tracing + OpenTelemetry para trazas distribuidas (HTTP y JDBC)
-- Base de datos en memoria H2 sin ORM (JDBC puro), instrumentada con tracing
+## 🎯 Objetivos
 
-Cada módulo tiene su propio README con pasos de ejecución y detalles.
+Al finalizar este laboratorio, serás capaz de:
 
-## API Gateway (Spring Cloud Gateway)
+- Implementar **Persistencia JDBC** usando `JdbcTemplate`.
+- Crear Clientes REST Declarativos usando **OpenFeign**.
+- Aplicar patrones de **Circuit Breaker** para manejar fallos en servicios.
+- Implementar **Time Limiters** para prevenir latencia en cascada.
+- Configurar mecanismos de **Retry** para fallos transitorios.
 
-El módulo `api-gateway` actúa como puerta de entrada (edge service) para exponer
-los microservicios detrás de endpoints unificados y con balanceo de carga.
-Está integrado con Eureka para descubrimiento dinámico de servicios.
+## 🏗 Estructura del Proyecto
 
-- Puerto: `8082`
-- Descubrimiento: habilitado con `spring.cloud.gateway.discovery.locator.enabled=true`.
-- Rutas definidas (application.yml):
-  - `/provider/api/unreliable` → `lb://service-provider` con filtros `StripPrefix=1` y `CircuitBreaker` (fallback a `forward:/fallback/provider-unreliable`).
-  - `/provider/**` → `lb://service-provider` con `StripPrefix=1`.
-  - `/consumer/**` → `lb://service-consumer` con `StripPrefix=1`.
+El laboratorio consta de tres servicios principales:
 
-Ejemplos:
-- `curl http://localhost:8082/provider/api/hello`
-- `curl http://localhost:8082/consumer/api/proxy`
-- `curl -i http://localhost:8082/provider/api/unreliable`  # CircuitBreaker activo; puede devolver fallback
+- **api-gateway**: Punto de entrada (Spring Cloud Gateway).
+- **service-provider**: Un servicio backend simulado que se comporta de manera poco fiable (retrasos, errores).
+- **service-consumer**: La aplicación que TÚ refactorizarás y completarás.
 
-Observabilidad:
-- Hereda la configuración de Micrometer Tracing/OTLP. En Docker Compose exporta
-  a `otel-collector` y puedes ver las trazas del `api-gateway` en Jaeger.
+### Resumen de Servicios
 
-## Versiones
+| Servicio | Puerto | Descripción |
+| :--- | :--- | :--- |
+| `api-gateway` | 8080 | Gateway que reenvía peticiones al consumer/provider. |
+| `service-consumer` | 8081 | **TU ESPACIO DE TRABAJO**. Consume el provider, almacena datos. |
+| `service-provider` | 8082 | Provee datos, simula fallos. |
+| `eureka-server` | 8761 | Descubrimiento de Servicios (Service Discovery). |
+| `jaeger` | 16686 | UI de Trazabilidad Distribuida. |
 
-- Java 21
-- Spring Boot 3.5.0
-- Spring Cloud 2025.0.1
+## 🛠 Prerrequisitos
 
-## Módulos
+- **Java 21**
+- **Maven**
+- **Docker & Docker Compose**
 
-- `eureka-server`: servidor de descubrimiento en `:8761`.
-- `service-provider`: expone `GET /api/hello` en `:8081` y se registra en
-  Eureka. Incluye H2 + JDBC con endpoint `/api/db/items`.
-- `service-consumer`: expone `GET /api/proxy` en `:8080` y llama al provider vía
-  Feign. Incluye H2 + JDBC con endpoint `/api/db/items` local. También añade un
-  ejemplo de resiliencia con CircuitBreaker/Retry/TimeLimiter en
-  `/api/proxy-unreliable`.
-- `api-gateway` (Spring Cloud Gateway): puerta de entrada en `:8082` que enruta
-  tráfico a servicios registrados en Eureka. Permite acceder a los servicios con
-  paths amigables y balanceo de carga vía `lb://`.
+## 🚀 Empezando
 
-## Observabilidad y Trazas
+1. **Iniciar Infraestructura**
+    Lanza los servicios de soporte (Eureka, Provider, Gateway, Jaeger, DB) usando Docker Compose:
 
-Se han añadido dependencias de Micrometer Tracing y OpenTelemetry (OTLP). Por
-defecto:
+    ```bash
+    docker-compose up -d --build
+    ```
 
-- Se genera muestreo al 100% (configurable).
-- Se exportan trazas vía OTLP gRPC a `http://localhost:4317` si hay un
-  Collector.
-- Se incluyen `traceId` y `spanId` en los logs.
+2. **Verificar Entorno**
+    - Eureka Dashboard: [http://localhost:8761](http://localhost:8761)
+    - Jaeger UI: [http://localhost:16686](http://localhost:16686)
 
-Endpoints instrumentados:
+3. **Ejecutar Tests (Verificación)**
+    Antes de empezar, ejecuta los tests en `service-consumer`. **Deberían FALLAR**. Esto es esperado ya que falta la implementación.
 
-- HTTP server/client: controladores y llamadas Feign.
-- JDBC: consultas realizadas por `JdbcTemplate` contra H2.
+    ```bash
+    mvn -pl service-consumer test
+    ```
 
-### Ejecutar un OpenTelemetry Collector + Jaeger (opcional)
+## 📝 Ejercicios
 
-Puedes usar Docker para ver las trazas en Jaeger:
+Los ejercicios se encuentran en `service-consumer/docs/`. Síguelos en orden:
 
-Docker Compose (ejemplo mínimo):
+1. **[Ejercicio 1: Persistencia JDBC](service-consumer/docs/01-jdbc-persistence.md)**
+    - Implementar `ItemRepository` sin usar JPA.
+2. **[Ejercicio 2: Cliente Feign](service-consumer/docs/02-feign-client.md)**
+    - Conectar al `service-provider` usando OpenFeign.
+3. **[Ejercicio 3: Circuit Breaker](service-consumer/docs/03-circuit-breaker.md)**
+    - Proteger tu consumidor de fallos del proveedor.
+4. **[Ejercicio 4: Time Limiter](service-consumer/docs/04-time-limiter.md)**
+    - Manejar respuestas lentas con elegancia.
+5. **[Ejercicio 5: Retry](service-consumer/docs/05-retry.md)**
+    - Reintentar automáticamente fallos transitorios.
 
-```yaml
-version: "3"
-services:
-  otel-collector:
-    image: otel/opentelemetry-collector:0.104.0
-    command: ["--config=/etc/otelcol-config.yaml"]
-    volumes:
-      - ./otelcol.yaml:/etc/otelcol-config.yaml
-    ports:
-      - "4317:4317"       # OTLP gRPC
-      - "4318:4318"       # OTLP HTTP (opcional)
-  jaeger:
-    image: jaegertracing/all-in-one:1.57
-    ports:
-      - "16686:16686"     # Jaeger UI
+## ✅ Verificación
+
+Para cada ejercicio:
+
+1. Lee la guía en `docs/`.
+2. Implementa el código en `src/main/java`.
+3. Ejecuta el test correspondiente en `src/test/java` (ej. `ItemRepositoryTest.java`).
+4. Una vez que el test pase, avanza al siguiente ejercicio.
+
+## 📊 Arquitectura
+
+```mermaid
+graph TD
+    Client -->|http:8080| Gateway[API Gateway]
+    Gateway -->|LB| Consumer[Service Consumer]
+    Gateway -->|LB| Provider[Service Provider]
+    Consumer -->|Feign /w Resilience| Provider
+    Consumer -->|JDBC| H2[(H2 Database)]
+    Consumer -->|Otlp| Jaeger[Jaeger Tracing]
 ```
-
-Archivo `otelcol.yaml`:
-
-```yaml
-receivers:
-  otlp:
-    protocols:
-      grpc:
-      http:
-exporters:
-  otlp:
-    endpoint: jaeger:4317
-    tls:
-      insecure: true
-service:
-  pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [otlp]
-```
-
-Abre Jaeger en http://localhost:16686 y busca por los servicios
-`service-provider`, `service-consumer` y `eureka-server`.
-
-## Cómo ejecutar rápidamente
-
-1. Terminal 1 – arrancar Eureka:
-    - `mvn -q -pl eureka-server -am spring-boot:run`
-2. Terminal 2 – arrancar provider:
-    - `mvn -q -pl service-provider -am spring-boot:run`
-3. Terminal 3 – arrancar consumer:
-    - `mvn -q -pl service-consumer -am spring-boot:run`
-4. Probar:
-    - `curl http://localhost:8081/api/hello`
-    - `curl http://localhost:8080/api/proxy`
-   - `curl http://localhost:8081/api/db/items` (JDBC + H2 en provider)
-   - `curl http://localhost:8080/api/db/items` (JDBC + H2 en consumer)
-   - `curl http://localhost:8080/api/proxy-unreliable` (resiliencia)
-
-Para más detalles y opciones de configuración, revisa los README de cada módulo.
-
-## Ejecutar con Docker Compose
-
-Se incluye un archivo `docker-compose.yml` que levanta:
-
-- Eureka, Provider, Consumer y API Gateway
-- Un OpenTelemetry Collector (OTLP gRPC/HTTP)
-- Jaeger (UI para ver trazas)
-
-y configura los servicios para exportar trazas al Collector dentro de la red de
-Docker.
-
-Comandos:
-
-- Construir imágenes: `docker compose build`
-- Levantar servicios: `docker compose up`
-- Probar:
-    - Panel de Eureka http://localhost:8761
-    - `curl http://localhost:8081/api/hello`
-    - `curl http://localhost:8080/api/proxy`
-    - Gateway en http://localhost:8082
-    - A través del Gateway:
-        - `curl http://localhost:8082/provider/api/hello`
-        - `curl http://localhost:8082/consumer/api/proxy`
-        - `curl -i http://localhost:8082/provider/api/unreliable`  # aplica CircuitBreaker + fallback
-    - Abre Jaeger UI: http://localhost:16686 (busca servicios: service-provider,
-      service-consumer, eureka-server, api-gateway)
-
-Notas:
-
-- Los clientes usan la variable de entorno
-  `EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8761/eureka` para
-  descubrir Eureka dentro de la red de Docker.
-- Las apps están configuradas con
-  `MANAGEMENT_OTLP_TRACING_ENDPOINT=http://otel-collector:4317` para exportar
-  trazas al Collector del Compose.
-- `depends_on` asegura el orden de arranque (Collector/Jaeger → Eureka →
-  Provider → Consumer → API Gateway). Aun así, los clientes reintentan el
-  registro hasta que Eureka esté disponible.
