@@ -15,7 +15,7 @@
   <properties>
     <java.version>21</java.version>
     <spring-boot.version>4.0.2</spring-boot.version>
-    <spring-cloud.version>2025.1.0</spring-cloud.version>
+    <spring-cloud.version>2025.1.1</spring-cloud.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <build.plugins.plugin.version>3.5.5</build.plugins.plugin.version>
   </properties>
