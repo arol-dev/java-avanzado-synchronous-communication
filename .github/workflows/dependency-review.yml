@@ -18,7 +18,7 @@ jobs:
 
       # Dependency Review scans changes to dependency manifests in the PR and flags known vulnerabilities
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           # Set to true to fail the workflow when vulnerabilities are detected
           fail-on-severity: high
